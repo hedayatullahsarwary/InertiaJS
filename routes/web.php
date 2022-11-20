@@ -21,12 +21,43 @@ Route::get('/', function () {
 });
 
 Route::get('/users', function () {
-    return Inertia::render('Users', [
-        'users' => User::paginate(10)->through(fn($users) => [
-            'id'        =>  $users->id,
-            'name'      =>  $users->name
-        ])
+    return Inertia::render('Users/Index', [
+        'users' => User::query()
+            ->when(Request::input('search'), function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn($users) => [
+                'id'        =>  $users->id,
+                'name'      =>  $users->name
+            ]),
+
+        'filters' => Request::only(['search'])
     ]);
+});
+
+Route::get('/users/create', function () {
+    return Inertia::render('Users/Create');
+});
+
+Route::post('/users', function () {
+    //---Request the Validate
+    $attributes = Request::validate([
+        'name'      =>      'required',
+        'email'     =>      ['required', 'email'],
+        'password'  =>      'required'
+    ]);
+
+    //---Add Timestamp
+    $attributes['created_at'] = date('Y-m-d H:i:s');
+    $attributes['updated_at'] = date('Y-m-d H:i:s');
+    
+    //---Create User
+    User::create($attributes);
+
+    //---Redirect
+    return redirect('/users');
 });
 
 Route::get('/settings', function () {
