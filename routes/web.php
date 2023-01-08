@@ -54,6 +54,9 @@ Route::post('/users', function () {
     $attributes['updated_at'] = date('Y-m-d H:i:s');
     
     //---Create User
+    // User::create([
+    //     'name' => Request::input('name')
+    // ]);
     User::create($attributes);
 
     //---Redirect

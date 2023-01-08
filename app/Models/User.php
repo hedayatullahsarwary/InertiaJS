@@ -45,6 +45,7 @@ class User extends Authenticatable
 
     //---Password Hashing
     public function setPasswordAttribute($value) {
-        $this->attributes['password'] = Hash::make($value);
+        //$this->attributes['password'] = Hash::make($value);
+        $this->attributes['password'] = bcrypt($value);
     }//---End of Function setPasswordAttribute
 }
