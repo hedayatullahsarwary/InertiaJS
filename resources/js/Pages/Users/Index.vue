@@ -9,10 +9,6 @@
 
       <a href="/users/create" class="text-blue-500 text-sm ml-3">New User</a>
     </div>
-    
-
-    
-
     <input v-model="search" type="text" placeholder="Search..." class="border px-2 rounded-lg" />
   </div>
 
@@ -53,6 +49,7 @@
   import { ref, watch } from "vue";
   import Pagination from "../../Shared/Pagination.vue";
   import { Inertia } from "@inertiajs/inertia";
+  import debounce from "lodash/debounce";
 
   let props = defineProps({ 
     users: Object,
@@ -61,10 +58,12 @@
 
   let search = ref(props.filters.search);
 
-  watch(search, value => {
+  watch(search, debounce( function (value) {
+    console.log("triggered");
+
     Inertia.get('/users', { search: value }, {
       preserveState: true,
       replace: true
     });
-  });
+  }, 300));
 </script>
